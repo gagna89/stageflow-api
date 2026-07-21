@@ -44,6 +44,15 @@ async def list_offers(
     return await repo.get_all(skip=skip, limit=limit, status=OfferStatus.published)
 
 
+@router.get("/stats/summary")
+async def get_offers_stats(db: DBSession, current_user: CurrentUser):
+    """Statistiques : nombre d'offres par statut (réservé au responsable pédagogique)."""
+    require_role(current_user, RoleEnum.program_manager)
+
+    repo = OfferRepository(db)
+    return await repo.count_by_status()
+
+
 @router.get("/{offer_id}", response_model=OfferResponse)
 async def get_offer(offer_id: int, db: DBSession, current_user: CurrentUser):
     repo = OfferRepository(db)

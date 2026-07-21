@@ -16,6 +16,15 @@ async def list_my_applications(db: DBSession, current_user: CurrentUser):
     return await repo.get_by_student(current_user.id)
 
 
+@router.get("/stats/summary")
+async def get_applications_stats(db: DBSession, current_user: CurrentUser):
+    """Statistiques : nombre de candidatures par statut (réservé au responsable pédagogique)."""
+    require_role(current_user, RoleEnum.program_manager)
+
+    repo = ApplicationRepository(db)
+    return await repo.count_by_status()
+
+
 @router.patch("/{application_id}/decision", response_model=ApplicationResponse)
 async def decide_application(
     application_id: int, data: ApplicationDecision, db: DBSession, current_user: CurrentUser
